@@ -1,151 +1,143 @@
+"""
+Infinitrix.ipynb
 
-# Infinitrix.ipynb
+Description:
+    Iris Classification utilizing Logistic Regression and Linear Regression.
+    This script performs data loading, preprocessing, model training, 
+    and evaluation using the Scikit-Learn framework on Google Colab.
 
-# Original file is located at
-#     https://colab.research.google.com/drive/15lYNABv-J0hOwspe93CFo4mm6PT4pGpA
+Author: Shiva Dubey
+"""
 
-# A LOGISTIC REGTRESSION IRIS CLASSIFIER MODEL
-# 
+# ==========================================
+# 1. Setup and Data Preprocessing
+# ==========================================
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 from google.colab import files
-from matplotlib import pyplot as plt
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
 
-# Importing all the Neccessary Libraries for data extraction and data preprocessing
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDisplay
 
+# Uploading the file from local storage to the Remote Colab server
 files.upload()
 
-# Uploadiung the file from the local storage to the Remote server
-
+# Loading the dataset
 df = pd.read_csv("iris (2).csv")
-print(df.head())
+print("Dataset Head:\n", df.head())
 
-# Checking the required dataframe to be compatible for training or not
-
-
-
-
-feature = df[['sepal_length' , 'sepal_width' , 'petal_length' , 'petal_width']]
+# Feature Selection
+feature = df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
 target = df[['species']]
 
-# Dividing the data into features and target variables
-
+# Label Encoding: Converting string labels to numerical values
 target = target.replace({'setosa': 1, 'versicolor': 2, 'virginica': 3})
 
-# Renaming the label classes to make them code relevant 
+# ==========================================
+# 2. Model I: Logistic Regression
+# ==========================================
 
-model =LogisticRegression()
+print("\n--- Training Logistic Regression Model ---")
 
-# Declaring the LOGISTIC REGRESSION model 
+model_log = LogisticRegression()
 
-X_train , X_test ,y_train ,y_test = train_test_split(feature , target , test_size=0.2 , shuffle =True ,random_state =42)
-
-#  Performing Train Test Split for training and testing purposes
-
-model.fit(X_train , y_train)
-
-# fitting data into LOGISTIC REGRESSION MODEL
-
-y_pred = model.predict(X_test)
-
-# Forward pass of test dataset
-
-cm = confusion_matrix(y_test, y_pred)
-print(cm)
-
-# Confusion Matrix
-
-from sklearn.metrics import ConfusionMatrixDisplay
-import matplotlib.pyplot as plt
-
-disp = ConfusionMatrixDisplay(
-    confusion_matrix=cm,
-    display_labels=["Class 0", "Class 1", "Class 2"]
+# Splitting data into Training and Testing sets (80/20 split)
+X_train, X_test, y_train, y_test = train_test_split(
+    feature, target, test_size=0.2, shuffle=True, random_state=42
 )
 
-disp.plot(cmap="Blues")
+# Training the model
+model_log.fit(X_train, y_train)
+
+# Forward pass (Prediction) on test data
+y_pred_log = model_log.predict(X_test)
+
+# Evaluation: Confusion Matrix
+cm_log = confusion_matrix(y_test, y_pred_log)
+print("Confusion Matrix (Logistic):\n", cm_log)
+
+# Visualization: Confusion Matrix
+disp_log = ConfusionMatrixDisplay(
+    confusion_matrix=cm_log,
+    display_labels=["Class 1", "Class 2", "Class 3"]
+)
+disp_log.plot(cmap="Blues")
+plt.title("Logistic Regression Confusion Matrix")
 plt.show()
 
-t = 0
-for i in range(0, y_pred.size):
-  if y_pred[i] == y_test.iloc[i, 0]:
-    t += 1
-print(t / y_pred.size)
+# Accuracy Check (Manual Calculation)
+correct_preds = 0
+for i in range(0, y_pred_log.size):
+    if y_pred_log[i] == y_test.iloc[i, 0]:
+        correct_preds += 1
+print(f"Logistic Model Accuracy: {correct_preds / y_pred_log.size}")
 
-#  Checking the credibility of the model by checking number of correct and incorrect predicts
+# Single Instance Prediction
+single_pred_log = model_log.predict([[4.9, 2.0, 3.0, 1.0]])
 
-pred = model.predict([[	4.9 ,2.0,3.0, 1.0]])
-
-if(pred == 1):
-  print('setosa')
-elif(pred == 2):
-  print('versicolor')
+print("Prediction for [4.9, 2.0, 3.0, 1.0]: ", end="")
+if single_pred_log == 1:
+    print('Setosa')
+elif single_pred_log == 2:
+    print('Versicolor')
 else:
-  print('virginica')
-
-# PRINTING THE FINAL ANSWER 
-
-#--------------------------------------------------------------------------------------------------------------
-#--------------------------------------------------------------------------------------------------------------
+    print('Virginica')
 
 
-#LINEAR REGRESSION MODEL
+# ==========================================
+# 3. Model II: Linear Regression
+# ==========================================
 
-model =LinearRegression()
+print("\n--- Training Linear Regression Model ---")
 
-# Declaring the LOGISTIC REGRESSION model 
+model_lin = LinearRegression()
 
-X_train , X_test ,y_train ,y_test = train_test_split(feature , target , test_size=0.2 , shuffle =True ,random_state =42)
-
-#  Performing Train Test Split for training and testing purposes
-
-model.fit(X_train , y_train)
-
-# fitting data into LOGISTIC REGRESSION MODEL
-
-y_pred = model.predict(X_test)
-#converting y_pred logits to actual class labels
-y_pred = np.argmax(y_pred, axis=1)
-
-# Forward pass of test dataset
-
-cm = confusion_matrix(y_test, y_pred)
-print(cm)
-
-# Confusion Matrix
-
-from sklearn.metrics import ConfusionMatrixDisplay
-import matplotlib.pyplot as plt
-
-disp = ConfusionMatrixDisplay(
-    confusion_matrix=cm,
-    display_labels=["Class 0", "Class 1", "Class 2"]
+# Re-splitting data (Standard practice to ensure clean state)
+X_train, X_test, y_train, y_test = train_test_split(
+    feature, target, test_size=0.2, shuffle=True, random_state=42
 )
 
-disp.plot(cmap="Blues")
+# Training the model
+model_lin.fit(X_train, y_train)
+
+# Forward pass (Prediction) on test data
+y_pred_lin = model_lin.predict(X_test)
+
+# Converting logits/continuous outputs to class labels
+# Note: Using argmax as per original logic
+y_pred_lin = np.argmax(y_pred_lin, axis=1)
+
+# Evaluation: Confusion Matrix
+cm_lin = confusion_matrix(y_test, y_pred_lin)
+print("Confusion Matrix (Linear):\n", cm_lin)
+
+# Visualization: Confusion Matrix
+disp_lin = ConfusionMatrixDisplay(
+    confusion_matrix=cm_lin,
+    display_labels=["Class 1", "Class 2", "Class 3"]
+)
+disp_lin.plot(cmap="Blues")
+plt.title("Linear Regression Confusion Matrix")
 plt.show()
 
-t = 0
-for i in range(0, y_pred.size):
-  if y_pred[i] == y_test.iloc[i, 0]:
-    t += 1
-print(t / y_pred.size)
+# Accuracy Check (Manual Calculation)
+correct_preds_lin = 0
+for i in range(0, y_pred_lin.size):
+    if y_pred_lin[i] == y_test.iloc[i, 0]:
+        correct_preds_lin += 1
+print(f"Linear Model Accuracy: {correct_preds_lin / y_pred_lin.size}")
 
-#  Checking the credibility of the model by checking number of correct and incorrect predicts
+# Single Instance Prediction
+single_pred_lin = model_lin.predict([[4.9, 2.0, 3.0, 1.0]])
 
-pred = model.predict([[	4.9 ,2.0,3.0, 1.0]])
-
-if(pred == 1):
-  print('setosa')
-elif(pred == 2):
-  print('versicolor')
+# Note: Linear regression prediction logic
+print("Prediction for [4.9, 2.0, 3.0, 1.0]: ", end="")
+if single_pred_lin == 1:
+    print('Setosa')
+elif single_pred_lin == 2:
+    print('Versicolor')
 else:
-  print('virginica')
-
-# PRINTING THE FINAL ANSWER 
+    print('Virginica')
