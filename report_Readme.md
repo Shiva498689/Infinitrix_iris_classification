@@ -115,7 +115,10 @@ $$w = (X^T X)^{-1} X^T y$$
 
 #### 3.1 Confusion Matrix
 The confusion matrix $C \in \mathbb{N}^{K \times K}$ allows visualization of model performance:
-$$C_{ij} = \sum_{i=1}^m \mathbb{I}(y^{(i)}_{true} = i \land y^{(i)}_{pred} = j)$
+
+$$
+C_{ij} = \sum_{i=1}^m \mathbb{I}(y^{(i)}_{\text{true}} = i \land y^{(i)}_{\text{pred}} = j)
+$$
 
 #### 3.2 Accuracy Score
 The accuracy metric calculates the proportion of correct predictions:
