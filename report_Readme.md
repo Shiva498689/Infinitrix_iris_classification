@@ -32,7 +32,112 @@
 
     *** Test Dataset is created by splitting the Train Dataset itself into 1:4 respectively .***
 
-    Maths Behind the Logistic Regression Model:
+    <!-- Maths Behind the Logistic Regression Model: -->
+
+    # Mathematical Foundations of Iris Classification
+
+This document provides a rigorous mathematical analysis of the machine learning models implemented in the `Infinitrix` notebook. It details the underlying hypothesis spaces, objective functions, optimization strategies, and evaluation metrics for both Logistic Regression and Linear Regression as applied to the Iris dataset.
+
+---
+
+## 1. Problem Formulation
+
+We define the dataset as $\mathcal{D} = \{(x^{(i)}, y^{(i)})\}_{i=1}^{m}$, where:
+* $m$ is the number of training examples.
+* $x^{(i)} \in \mathbb{R}^n$ is the feature vector ($n=4$: sepal length, sepal width, petal length, petal width).
+* $y^{(i)} \in \{1, 2, 3\}$ are the class labels (Setosa, Versicolor, Virginica).
+
+---
+
+## 2. Model I: Multinomial Logistic Regression
+
+Logistic Regression is used here as a probabilistic classifier. Since there are $K=3$ classes, the model generalizes to **Softmax Regression** (Multinomial Logistic Regression).
+
+### 2.1. The Forward Pass (Hypothesis)
+
+The model parameterizes a linear transformation followed by a non-linear activation. Let $W \in \mathbb{R}^{n \times K}$ be the weight matrix and $b \in \mathbb{R}^K$ be the bias vector.
+
+For an input vector $x$, we first compute the **logits** (raw scores) for each class $k$:
+$$z_k = w_k^T x + b_k$$
+
+To interpret these logits as probabilities, we apply the **Softmax Function** $\sigma: \mathbb{R}^K \to \Delta^{K-1}$ (the probability simplex):
+
+$$P(y=k \mid x; W, b) = \hat{y}_k = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}$$
+
+This ensures that $\hat{y}_k \in [0, 1]$ and $\sum_{k=1}^K \hat{y}_k = 1$.
+
+### 2.2. The Objective Function (Loss)
+
+We maximize the likelihood of the data, which is equivalent to minimizing the **Categorical Cross-Entropy Loss** (Log-Loss). For a single example $(x, y)$, let $y$ be one-hot encoded. The loss $L$ is:
+
+$$L(W, b) = - \sum_{k=1}^{K} y_k \log(\hat{y}_k)$$
+
+The global cost function $J$ over $m$ samples, including $L_2$ regularization (Ridge), is:
+
+$$J(W, b) = - \frac{1}{m} \sum_{i=1}^{m} \sum_{k=1}^{K} \mathbb{I}(y^{(i)}=k) \log(\hat{y}_k^{(i)}) + \frac{\lambda}{2} \|W\|_F^2$$
+
+*(Where $\|W\|_F$ is the Frobenius norm and $\lambda$ is the regularization strength).*
+
+### 2.3. Optimization (Backward Pass)
+
+To minimize $J(W, b)$, we compute the gradients with respect to the parameters. Using the Chain Rule, the gradient with respect to the weights for class $k$ is:
+
+$$\frac{\partial J}{\partial w_k} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_k^{(i)} - y_k^{(i)}) x^{(i)} + \lambda w_k$$
+
+The solver uses these gradients to update weights. `sklearn` typically employs the **L-BFGS-B** (Limited-memory Broyden–Fletcher–Goldfarb–Shanno) algorithm, a Quasi-Newton method that approximates the Hessian matrix (second-order derivatives) for faster convergence compared to standard Stochastic Gradient Descent (SGD).
+
+---
+
+## 3. Model II: Linear Regression (OLS)
+
+Linear Regression treats the classification problem as a regression problem, predicting a continuous scalar value rather than a probability distribution.
+
+### 3.1. The Forward Pass
+
+The hypothesis is an affine transformation mapping $\mathbb{R}^n \to \mathbb{R}$:
+
+$$h(x) = w^T x + b$$
+
+### 3.2. The Objective Function
+
+The model minimizes the **Residual Sum of Squares (RSS)**, also known as the squared $L_2$ norm of the errors:
+
+$$J(w, b) = \sum_{i=1}^{m} (y^{(i)} - h(x^{(i)}))^2 = \| y - Xw \|_2^2$$
+
+**Note on Validity:** Applying OLS to classification imposes an ordinal relationship on the classes (e.g., treating Class 3 as "greater than" Class 1). This introduces a bias when the classes are nominal (unordered), as the model penalizes errors between Class 1 and 3 more heavily than between Class 1 and 2.
+
+### 3.3. Closed-Form Solution
+
+Unlike Logistic Regression, Linear Regression has a closed-form analytical solution derived from setting the gradient $\nabla_w J$ to zero. The optimal weights are found via the **Normal Equation**:
+
+$$w = (X^T X)^{-1} X^T y$$
+
+In practice, solvers may use **Singular Value Decomposition (SVD)** to solve the least squares problem $\min_w \| Xw - y \|_2$ for numerical stability, specifically:
+$$w = V \Sigma^{-1} U^T y$$
+Where $X = U \Sigma V^T$.
+
+---
+
+## 4. Evaluation Metrics
+
+### 4.1. Confusion Matrix
+
+The confusion matrix $C \in \mathbb{N}^{K \times K}$ allows visualization of model performance:
+
+$$C_{ij} = \sum_{i=1}^m \mathbb{I}(y^{(i)}_{true} = i \land y^{(i)}_{pred} = j)$$
+
+* **Diagonal ($i=j$):** True Positives.
+* **Off-Diagonal ($i \neq j$):** Misclassifications.
+
+### 4.2. Accuracy Score
+
+The accuracy metric calculates the proportion of correct predictions (Empirical Risk Minimization):
+
+$$\text{Accuracy} = \frac{1}{m} \sum_{i=1}^{m} \mathbb{I}(\hat{y}^{(i)} = y^{(i)})$$
+
+---
+
+*This document serves as the mathematical reference for the "Infinitrix" implementation.*
 
 
 
