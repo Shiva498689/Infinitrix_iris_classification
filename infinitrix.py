@@ -27,7 +27,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, ConfusionMatrixDis
 files.upload()
 
 # Loading the dataset
-df = pd.read_csv("iris (2).csv")
+df = pd.read_csv("iris.csv")
 
 # ==========================================
 # 2. Advanced Data Preprocessing
