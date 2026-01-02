@@ -1,125 +1,205 @@
 # Infinitrix AI/ML Domain Induction Task Report
 
-**Topic:** Iris Classifier using Morphological Features  
+## Iris Species Classification Using Morphological Features
+
 **Author:** Shiva Dubey  
 **Roll Number:** 250002069  
 **Branch:** Electrical Engineering  
-**Email:** ee250002069@iiti.ac.in  
+**Institute Email:** ee250002069@iiti.ac.in  
 
 ---
 
-## Project Overview
+## 1. Problem Overview and Motivation
 
-**Framework:** Scikit-Learn  
-**Environment:** Google Colab  
-**Input Vector:** $\{ \text{sepal length, sepal width, petal length, petal width} \}$  
-**Output Classes:** $\{ \text{Setosa, Versicolor, Virginica} \}$
+The objective of this project is to design and evaluate supervised machine learning models capable of classifying Iris flower species based on their morphological characteristics. Given a set of continuous-valued features describing the geometry of a flower, the task is to predict its species label among three possible classes: **Setosa, Versicolor, and Virginica**.
 
-### Introduction
-This project explores the implementation of supervised learning algorithms to classify Iris species based on morphological features. Two distinct models are evaluated:
-1.  **Multinomial Logistic Regression** (Softmax Regression)
-2.  **Linear Regression** (Adapted for Classification via Label Encoding)
+This problem is a canonical benchmark in machine learning due to its balanced class distribution, low dimensionality, and partial linear separability. It provides an ideal platform for understanding classification algorithms, optimization techniques, and model limitations.
 
-Both models are trained on labeled data provided in `iris.csv` to learn the mapping function $f: X \to Y$.
+The motivation of this project is to:
+- Understand the mathematical foundations of supervised learning
+- Compare appropriate classifiers against naïve baselines
+- Build an end-to-end ML pipeline using Scikit-Learn
+- Develop critical intuition regarding model selection
 
 ---
 
-## Dataset Description
+## 2. Dataset Description and Preprocessing
 
-The primary dataset is derived from the standard Iris dataset (originally hosted on Kaggle).
-* **Original Size:** 150 data points.
-* **Augmentation:** The dataset has been augmented with synthetic data points generated via AI methods, bringing the total sample size to approximately 160.
-* **Feature Space:** The dataset consists of 5 columns. The first four are continuous floating-point features:
-    * Sepal Length
-    * Sepal Width
-    * Petal Length
-    * Petal Width
-* **Target Variable:** The 5th column, `specie`, serves as the categorical label.
+### 2.1 Dataset Description
 
----
+The dataset used in this project is derived from the standard **Iris dataset**.
 
-## Workflow Methodology
+- **Original Samples:** 150
+- **Augmented Samples:** ~160
+- **Number of Features:** 4
+- **Number of Classes:** 3
 
-The data processing pipeline follows these steps:
+### Feature Set
+- Sepal Length (cm)
+- Sepal Width (cm)
+- Petal Length (cm)
+- Petal Width (cm)
 
-1.  **Label Encoding:**
-    The categorical string labels are mapped to numerical ordinal values to facilitate mathematical processing:
-    * Setosa $\rightarrow 1$
-    * Versicolor $\rightarrow 2$
-    * Virginica $\rightarrow 3$
-
-2.  **Train-Test Split:**
-    To ensure robust model evaluation and prevent overfitting, the dataset is partitioned using a randomized split strategy.
-    * **Training Set:** 80% of the data (used for parameter optimization).
-    * **Testing Set:** 20% of the data (used for validation).
+### Target Variable
+- `specie` ∈ {Setosa, Versicolor, Virginica}
 
 ---
 
-## Mathematical Foundations of Iris Classification
+### 2.2 Data Preprocessing
 
-This section provides a rigorous analysis of the hypothesis spaces, objective functions, and optimization strategies employed "under the hood" by Scikit-Learn.
+#### Label Encoding
+Categorical labels were encoded numerically as:
+- Setosa → 1
+- Versicolor → 2
+- Virginica → 3
 
-### 1. Model I: Multinomial Logistic Regression
+#### Train-Test Split
+The dataset was split randomly:
+- **Training Set:** 80%
+- **Testing Set:** 20%
 
-Logistic Regression is used here as a probabilistic classifier. Since there are $K=3$ classes, the model generalizes to **Softmax Regression**.
-
-#### 1.1 The Forward Pass (Hypothesis)
-The model parameterizes a linear transformation followed by a non-linear activation. Let $W \in \mathbb{R}^{n \times K}$ be the weight matrix and $b \in \mathbb{R}^K$ be the bias vector.
-For an input vector $x$, we compute the **logits** $z_k = w_k^T x + b_k$. To interpret these as probabilities, we apply the **Softmax Function** $\sigma: \mathbb{R}^K \to \Delta^{K-1}$:
-
-$$P(y=k \mid x; W, b) = \hat{y}_k = \frac{e^{z_k}}{\sum_{j=1}^{K} e^{z_j}}$$
-
-This ensures that $\hat{y}_k \in [0, 1]$ and $\sum_{k=1}^K \hat{y}_k = 1$.
-
-#### 1.2 The Objective Function (Loss)
-We minimize the **Categorical Cross-Entropy Loss** (Log-Loss). For a single example $(x, y)$, let $y$ be one-hot encoded. The loss $L$ is:
-
-$$L(W, b) = - \sum_{k=1}^{K} y_k \log(\hat{y}_k)$$
-
-The global cost function $J$ over $m$ samples, including $L_2$ regularization (Ridge), is:
-
-$$J(W, b) = - \frac{1}{m} \sum_{i=1}^{m} \sum_{k=1}^{K} \mathbb{I}(y^{(i)}=k) \log(\hat{y}_k^{(i)}) + \frac{\lambda}{2} \|W\|_F^2$$
-
-#### 1.3 Optimization (Backward Pass)
-The gradients with respect to the weights are computed via the Chain Rule:
-
-$$\frac{\partial J}{\partial w_k} = \frac{1}{m} \sum_{i=1}^m (\hat{y}_k^{(i)} - y_k^{(i)}) x^{(i)} + \lambda w_k$$
-
-Scikit-Learn optimizes this using the **L-BFGS-B** (Limited-memory Broyden–Fletcher–Goldfarb–Shanno) algorithm, a Quasi-Newton method that approximates the Hessian matrix for faster convergence.
+This ensures unbiased performance evaluation.
 
 ---
 
-### 2. Model II: Linear Regression (OLS)
+## 3. Mathematical Formulation of the Model
 
-
-
-Linear Regression treats the classification problem as a continuous regression task, predicting a scalar value rather than a probability distribution.
-
-#### 2.1 The Forward Pass
-The hypothesis is an affine transformation mapping $\mathbb{R}^n \to \mathbb{R}$:
-$$h(x) = w^T x + b$$
-
-#### 2.2 The Objective Function
-The model minimizes the **Residual Sum of Squares (RSS)**:
-$$J(w, b) = \sum_{i=1}^{m} (y^{(i)} - h(x^{(i)}))^2 = \| y - Xw \|_2^2$$
-
-*Note: Applying OLS to classification imposes an ordinal relationship (e.g., treating Class 3 as "greater than" Class 1), which introduces bias for nominal classes.*
-
-#### 2.3 Closed-Form Solution
-The optimal weights are found via the **Normal Equation**:
-$$w = (X^T X)^{-1} X^T y$$
+Two different models were implemented to analyze performance differences.
 
 ---
 
-### 3. Evaluation Metrics
+### 3.1 Multinomial Logistic Regression (Softmax Regression)
 
-#### 3.1 Confusion Matrix
-The confusion matrix $C \in \mathbb{N}^{K \times K}$ allows visualization of model performance:
+Let:
+- \( x \in \mathbb{R}^4 \) be the input feature vector
+- \( W \in \mathbb{R}^{4 \times 3} \) be the weight matrix
+- \( b \in \mathbb{R}^3 \) be the bias vector
 
-$$
-C_{ij} = \sum_{i=1}^m \mathbb{I}(y^{(i)}_{\text{true}} = i \land y^{(i)}_{\text{pred}} = j)
-$$ 
+#### Logits
+\[
+z_k = w_k^T x + b_k
+\]
 
-#### 3.2 Accuracy Score
-The accuracy metric calculates the proportion of correct predictions:
-$$\text{Accuracy} = \frac{1}{m} \sum_{i=1}^{m} \mathbb{I}(\hat{y}^{(i)} = y^{(i)})$$
+#### Softmax Function
+\[
+P(y = k \mid x) = \frac{e^{z_k}}{\sum_{j=1}^{3} e^{z_j}}
+\]
+
+---
+
+### 3.2 Linear Regression (Baseline Model)
+
+The regression model predicts a scalar output:
+\[
+h(x) = w^T x + b
+\]
+
+Predicted values are rounded to obtain discrete class labels.  
+This approach imposes an artificial ordinal structure on nominal classes.
+
+---
+
+## 4. Loss Function and Training Process
+
+### 4.1 Logistic Regression Loss
+
+The **categorical cross-entropy loss** is minimized:
+\[
+L = -\sum_{k=1}^{3} y_k \log(\hat{y}_k)
+\]
+
+With L2 regularization:
+\[
+J(W) = \frac{1}{m} \sum_{i=1}^{m} L^{(i)} + \frac{\lambda}{2} \|W\|_F^2
+\]
+
+#### Optimization
+- Optimizer: **L-BFGS**
+- Type: Quasi-Newton Method
+- Advantage: Fast convergence for small datasets
+
+---
+
+### 4.2 Linear Regression Loss
+
+The **Residual Sum of Squares (RSS)** is minimized:
+\[
+J(w) = \sum_{i=1}^{m} (y^{(i)} - h(x^{(i)}))^2
+\]
+
+Closed-form solution:
+\[
+w = (X^T X)^{-1} X^T y
+\]
+
+---
+
+## 5. Model Architecture and Justification
+
+### 5.1 Multinomial Logistic Regression
+
+**Architecture**
+- Input Layer: 4 features
+- Linear Transformation
+- Softmax Output Layer (3 neurons)
+
+**Justification**
+- Designed for multi-class classification
+- Produces probabilistic outputs
+- Interpretable and computationally efficient
+
+---
+
+### 5.2 Linear Regression
+
+**Architecture**
+- Input Layer
+- Single linear output neuron
+
+**Justification**
+- Included as a baseline model
+- Highlights limitations of regression for classification
+- Demonstrates model–task mismatch
+
+---
+
+## 6. Evaluation Methodology and Results
+
+### Evaluation Metrics
+- Accuracy
+- Confusion Matrix
+
+### Methodology
+- Identical train-test splits for both models
+- Evaluation on unseen test data
+
+### Results
+- Logistic Regression achieved high accuracy
+- Perfect classification of Setosa
+- Minor confusion between Versicolor and Virginica
+- Linear Regression showed inferior performance
+
+---
+
+## 7. Limitations and Future Improvements
+
+### Limitations
+1. Limited dataset size
+2. Synthetic data may introduce bias
+3. Linear decision boundaries restrict expressiveness
+4. Linear Regression unsuitable for nominal classes
+
+---
+
+### Future Improvements
+1. Use non-linear classifiers (SVM, Decision Trees)
+2. Apply k-fold cross-validation
+3. Feature scaling and PCA
+4. Evaluate precision, recall, and F1-score
+5. Explore neural network classifiers
+
+---
+
+## Conclusion
+
+This project demonstrates the importance of selecting models aligned with the underlying problem structure. Multinomial Logistic Regression provides a principled solution for multi-class classification, while Linear Regression serves as a baseline highlighting conceptual limitations. The study reinforces foundational machine learning concepts and sets the stage for more advanced exploration.
