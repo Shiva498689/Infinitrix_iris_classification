@@ -43,7 +43,7 @@ Classification of biological species based on physical characteristics is a fund
 **Feature Vector:**
 
 \[
-x = [\text{sepal length, sepal width, petal length, petal width}]
+x = [ \text {sepal length, sepal width, petal length, petal width} \text]
 \]
 
 **Target Variable:** `specie` ∈ {Setosa, Versicolor, Virginica}
