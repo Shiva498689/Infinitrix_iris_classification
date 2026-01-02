@@ -202,9 +202,6 @@ $$
 
 Multinomial Logistic Regression provides a principled solution for multi-class classification, while Linear Regression serves as a baseline highlighting conceptual limitations. This project reinforces key principles of model selection, loss functions, and evaluation methodology in supervised learning.
 
----
 
-## References
 
-1. R. A. Fisher, “The Use of Multiple Measurements in Taxonomic Problems,” *Annals of Eugenics*, 1936.  
-2. T. Hastie, R. Tibshirani, and J. Friedman, *The Elements of Statistical Learning*, Springer.
+
