@@ -11,7 +11,7 @@
 
 ## Abstract
 
-This project presents a supervised machine learning approach for classifying Iris flower species using morphological measurements. Two models are evaluated: **Multinomial Logistic Regression** and **Linear Regression** adapted for classification. The objective is to analyze model suitability, mathematical formulation, training dynamics, and performance limitations. Experimental results show that probabilistic classifiers outperform regression-based approaches for nominal multi-class problems. This study reinforces foundational principles of model selection and loss-function alignment in machine learning.
+This project presents a supervised machine learning approach for classifying Iris flower species using morphological measurements. Two models are evaluated: **Multinomial Logistic Regression** and **Linear Regression** adapted for classification. The objective is to analyze model suitability, mathematical formulation, training dynamics, and performance limitations. Experimental results for this particular classification problem both the models achieved the same level of accuracy , but generally , Logistic regression models outperform the Linear Regression in Classification Problems  show that probabilistic classifiers outperform regression-based approaches for nominal multi-class problems. This study reinforces foundational principles of model selection and loss-function alignment in machine learning.
 
 ---
 
@@ -36,7 +36,6 @@ Classification of biological species based on physical characteristics is a fund
 ### 2.1 Dataset Description
 
 - **Original Samples:** 150  
-- **Augmented Samples:** ~160  
 - **Features:** 4 continuous variables  
 - **Classes:** 3 (Setosa, Versicolor, Virginica)  
 
@@ -150,7 +149,7 @@ $$
 
 ### 5.2 Linear Regression
 
-- Input Layer  
+- Input Layer: 4 features   
 - Single linear output neuron  
 
 **Justification:**  
@@ -175,7 +174,9 @@ $$
 ### 6.3 Results
 
 - **Logistic Regression:** High accuracy; perfect Setosa classification; minor confusion between Versicolor and Virginica  
-- **Linear Regression:** Lower accuracy; misclassifications due to inappropriate ordinal assumptions  
+- **Linear Regression:** High accuracy;  perfect Setosa classification; minor confusion between Versicolor and Virginica
+- ** Overall Accuracy = 97.56 % of both the models
+  *Generally this do not happens because Linear Classification is made for predicting the linear outputs rather than Classification purposes  
 
 ---
 
@@ -183,24 +184,32 @@ $$
 
 ### 7.1 Limitations
 
-1. Small dataset size limits generalization  
-2. Synthetic data may introduce bias  
-3. Linear decision boundaries restrict expressiveness  
-4. Linear Regression unsuitable for nominal classes  
+1. Small dataset size limits generalization
+2. Linearly separable data hence easy to make detection perfection
+3. model memorizes only single rule to differentiate between the species
+4. Linear Regression model not suitable for such models because they do not outputs probabilities in comparison to
+   Logistic Regression which uses softmax for giving probabilities as outputs
+
+  
 
 ### 7.2 Future Improvements
 
-1. Use non-linear classifiers (SVM, Decision Trees)  
-2. Apply k-fold cross-validation  
-3. Feature scaling and PCA  
-4. Evaluate precision, recall, and F1-score  
-5. Explore neural network-based models  
+1. Evaluate precision, recall, and F1-score  
+2. Explore neural network-based models
+3. Train the models on Actual images instead of length data
+4. To use CNNs on images of Iris flower to build industry grade solution
+5. Use Transfer Learning for improving accuracy on images of flowers  
 
 ---
 
 ## 8. Conclusion
 
 Multinomial Logistic Regression provides a principled solution for multi-class classification, while Linear Regression serves as a baseline highlighting conceptual limitations. This project reinforces key principles of model selection, loss functions, and evaluation methodology in supervised learning.
+
+## 9. Confusion Matrix of the models
+
+
+ 
 
 
 
