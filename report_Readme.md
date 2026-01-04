@@ -175,8 +175,8 @@ $$
 
 - **Logistic Regression:** High accuracy; perfect Setosa classification; minor confusion between Versicolor and Virginica  
 - **Linear Regression:** High accuracy;  perfect Setosa classification; minor confusion between Versicolor and Virginica
-- ** Overall Accuracy = 97.56 % of both the models
-  *Generally this do not happens because Linear Classification is made for predicting the linear outputs rather than Classification purposes  
+- **Overall Accuracy** = 97.56 % of both the models
+  **Generally this do not happens because Linear Classification is made for predicting the linear outputs rather than Classification purposes and it ouputs a single real number rather than probabilities of all     classes**
 
 ---
 
